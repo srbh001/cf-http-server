@@ -81,31 +81,19 @@ fn handle_stream(stream_buf: String) -> StreamHandler {
     };
 
     while let Some(line_content) = line_iterator.next() {
-        if line_content.starts_with("GET /") {
-            stream_handler.method = Method::GET; // Assuming some type of HTTP request only.
+        if line_content.starts_with("GET /") || line_content.starts_with("POST /") {
+            stream_handler.method = if line_content.starts_with("GET /") {
+                Method::GET
+            } else {
+                Method::POST
+            };
+
             let mut line_content_iter = line_content.split_whitespace();
-            line_content_iter.next(); // skip the "GET"
+            line_content_iter.next(); // skip the METHOD
             match line_content_iter.next() {
                 Some(full_path) => {
                     let mut path_iter = full_path.split("/");
                     path_iter.next();
-                    stream_handler.path = String::from("/") + path_iter.next().unwrap_or("");
-                    stream_handler.path_param = String::from(path_iter.next().unwrap_or(""));
-                }
-                None => {
-                    stream_handler.path = String::from("/");
-                    stream_handler.path_param = String::from("");
-                }
-            }
-        } else if line_content.starts_with("POST /") {
-            stream_handler.method = Method::POST; // Assuming some type of HTTP request only.
-            let mut line_content_iter = line_content.split_whitespace();
-            line_content_iter.next(); // skip the "GET"
-            match line_content_iter.next() {
-                Some(full_path) => {
-                    full_path.replace(" ", "");
-                    let mut path_iter = full_path.split("/");
-                    path_iter.next(); // Skip the blank char
                     stream_handler.path = String::from("/") + path_iter.next().unwrap_or("");
                     stream_handler.path_param = String::from(path_iter.next().unwrap_or(""));
                 }
@@ -331,7 +319,7 @@ fn handle_request(mut stream: TcpStream, directory: &str) {
 }
 
 fn main() {
-    println!("[INFO] : Logs from your program will appear here!");
+    println!("[INFO] : Server Started");
 
     let arguments: Vec<String> = env::args().collect();
     println!("{:?}", arguments);

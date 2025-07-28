@@ -6,7 +6,7 @@ authors = [
   "Codecrafters <hello@codecrafters.io>",
   "Saurabh Kumar <sksaurabhkumar009@gmail.com>",
 ]
-edition = "2024"
+edition = "2021"
 
 [dependencies]
 anyhow = "1.0.59"                                   # error handling
